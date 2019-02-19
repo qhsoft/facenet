@@ -29,17 +29,17 @@ parser.add_argument('--embedding-size', default = 128, type = int, metavar = 'ES
                     help = 'embedding size (default: 128)')
 parser.add_argument('--batch-size', default = 64, type = int, metavar = 'BS',
                     help = 'batch size (default: 128)')
-parser.add_argument('--num-workers', default = 8, type = int, metavar = 'NW',
-                    help = 'number of workers (default: 8)')
+parser.add_argument('--num-workers', default = 32, type = int, metavar = 'NW',
+                    help = 'number of workers (default: 32)')
 parser.add_argument('--learning-rate', default = 0.001, type = float, metavar = 'LR',
                     help = 'learning rate (default: 0.001)')
 parser.add_argument('--margin', default = 0.5, type = float, metavar = 'MG',
                     help = 'margin (default: 0.5)')
-parser.add_argument('--train-root-dir', default = '/run/media/hoosiki/WareHouse2/home/mtb/datasets/vggface2/test_mtcnnpy_182', type = str,
+parser.add_argument('--train-root-dir', default = '/data/nfs/face/train', type = str,
                     help = 'path to train root dir')
-parser.add_argument('--valid-root-dir', default = '/run/media/hoosiki/WareHouse2/home/mtb/datasets/lfw/lfw_mtcnnpy_182', type = str,
+parser.add_argument('--valid-root-dir', default = '/data/nfs/face/lfw', type = str,
                     help = 'path to valid root dir')
-parser.add_argument('--train-csv-name', default = './datasets/test_vggface2.csv', type = str,
+parser.add_argument('--train-csv-name', default = './datasets/train_vggface2.csv', type = str,
                     help = 'list of training images')
 parser.add_argument('--valid-csv-name', default = './datasets/lfw.csv', type = str,
                     help = 'list of validtion images')
@@ -69,6 +69,10 @@ def main():
                                                  args.num_train_triplets, args.num_valid_triplets,   
                                                  args.batch_size,         args.num_workers)
 
+        print("load:",data_size)
+        for phase in ['train', 'valid']:
+            print(phase,len(data_loaders[phase]))
+
         train_valid(model, optimizer, scheduler, epoch, data_loaders, data_size)
 
     print(80 * '=')
@@ -88,7 +92,8 @@ def train_valid(model, optimizer, scheduler, epoch, dataloaders, data_size):
             model.eval()
     
         for batch_idx, batch_sample in enumerate(dataloaders[phase]):
-                
+            
+            #break
             anc_img = batch_sample['anc_img'].to(device)
             pos_img = batch_sample['pos_img'].to(device)
             neg_img = batch_sample['neg_img'].to(device)

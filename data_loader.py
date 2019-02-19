@@ -36,7 +36,9 @@ class TripletFaceDataset(Dataset):
         triplets    = []
         classes     = df['class'].unique()
         face_classes = make_dictionary_for_face_class(df)
-         
+        
+
+        print("num_triplets",num_triplets)
         for _ in range(num_triplets):
 
             '''
@@ -76,9 +78,9 @@ class TripletFaceDataset(Dataset):
         
         anc_id, pos_id, neg_id, pos_class, neg_class, pos_name, neg_name = self.training_triplets[idx]
         
-        anc_img   = os.path.join(self.root_dir, str(pos_name), str(anc_id) + '.png')
-        pos_img   = os.path.join(self.root_dir, str(pos_name), str(pos_id) + '.png')
-        neg_img   = os.path.join(self.root_dir, str(neg_name), str(neg_id) + '.png')
+        anc_img   = os.path.join(self.root_dir, str(pos_name), str(anc_id) + '.jpg')
+        pos_img   = os.path.join(self.root_dir, str(pos_name), str(pos_id) + '.jpg')
+        neg_img   = os.path.join(self.root_dir, str(neg_name), str(neg_id) + '.jpg')
         
         anc_img   = io.imread(anc_img)
         pos_img   = io.imread(pos_img)
@@ -94,6 +96,10 @@ class TripletFaceDataset(Dataset):
             sample['pos_img'] = self.transform(sample['pos_img'])
             sample['neg_img'] = self.transform(sample['neg_img'])
             
+        # print(sample['anc_img'].shape)
+        # print(sample['pos_img'].shape)
+        # print(sample['neg_img'].shape)
+
         return sample
     
     
@@ -110,11 +116,13 @@ def get_dataloader(train_root_dir,     valid_root_dir,
     data_transforms = {
         'train': transforms.Compose([
             transforms.ToPILImage(),
+            transforms.Resize((182,182)),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize(mean = [0.5, 0.5, 0.5], std = [0.5, 0.5, 0.5])]),
         'valid': transforms.Compose([
             transforms.ToPILImage(),
+            transforms.Resize((182,182)),
             transforms.ToTensor(),
             transforms.Normalize(mean = [0.5, 0.5, 0.5], std = [0.5, 0.5, 0.5])])}
 
